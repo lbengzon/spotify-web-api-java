@@ -7,7 +7,9 @@ import com.wrapper.spotify.methods.authentication.AuthorizationURLRequest;
 import com.wrapper.spotify.methods.authentication.ClientCredentialsGrantRequest;
 import com.wrapper.spotify.methods.authentication.RefreshAccessTokenRequest;
 
+import com.wrapper.spotify.models.PlaylistTrackPosition;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -383,6 +385,38 @@ public class Api {
     setDefaults(builder);
     userId = UrlUtil.userToUri(userId);
     builder.path("/v1/users/" + userId + "/playlists/" + playlistId);
+    return builder;
+  }
+
+  public RemoveTrackFromPlaylistRequest.Builder removeTrackFromPlaylist(String userId, String playlistId, List<PlaylistTrackPosition> trackUris)
+  {
+    final RemoveTrackFromPlaylistRequest.Builder builder = RemoveTrackFromPlaylistRequest.builder();
+    setDefaults(builder);
+    builder.tracks(trackUris);
+    builder.path("/v1/users/" + userId + "/playlists/" + playlistId + "/tracks");
+    return builder;
+  }
+
+  public ReorderTracksInPlaylistRequest.Builder reorderTracksInPlaylist(String userId, String playlistId, int rangeStart, int insertBefore)
+  {
+    final ReorderTracksInPlaylistRequest.Builder builder = ReorderTracksInPlaylistRequest.builder();
+    setDefaults(builder);
+    builder.rangeStart(rangeStart);
+    builder.insertBefore(insertBefore);
+    builder.path("/v1/users/" + userId + "/playlists/" + playlistId + "/tracks");
+    return builder;
+  }
+
+  public ReplaceTracksInPlaylistRequest.Builder replaceTracksInPlaylist(String userId, String playlistId, List<String> trackUris)
+  {
+    final ReplaceTracksInPlaylistRequest.Builder builder = ReplaceTracksInPlaylistRequest.builder();
+    setDefaults(builder);
+    final JSONArray jsonArrayUri = new JSONArray();
+    jsonArrayUri.addAll(trackUris);
+    final JSONObject jsonObjectUris = new JSONObject();
+    jsonObjectUris.put("uris", jsonArrayUri);
+    builder.body(jsonObjectUris);
+    builder.path("/v1/users/" + userId + "/playlists/" + playlistId + "/tracks");
     return builder;
   }
 
